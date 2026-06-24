@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 
 const DEFAULT_PORT = "5000";
+const PROD_API_URL = "https://room-expense-tracker-3.onrender.com/api";
 
 const LOCAL_WEB_URL = `http://localhost:${DEFAULT_PORT}/api`;
 const LOCAL_ANDROID_EMULATOR_URL = `http://10.0.2.2:${DEFAULT_PORT}/api`;
@@ -26,6 +27,10 @@ const getBaseUrl = () => {
   }
 
   if (Platform.OS === "web") {
+    if (process.env.NODE_ENV === "production") {
+      return PROD_API_URL;
+    }
+
     return LOCAL_WEB_URL;
   }
 
