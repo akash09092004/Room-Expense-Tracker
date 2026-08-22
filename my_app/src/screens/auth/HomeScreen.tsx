@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { APP_NAME } from "../../utils/constants";
 
@@ -186,6 +187,7 @@ const HomeScreen = () => {
   const navigation = useNavigation<any>();
   const { width } = useWindowDimensions();
   const isDesktop = width >= 900;
+  const isCompact = width < 390;
 
   const fadeIn = useRef(new Animated.Value(0)).current;
   const slideUp = useRef(new Animated.Value(24)).current;
@@ -221,7 +223,7 @@ const HomeScreen = () => {
   ];
 
   return (
-    <View style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={["top", "left", "right"]}>
       {/* Orbs */}
       <Orb size={380} color={C.accentGlow} style={{ top: -140, left: -140 }} />
       <Orb size={280} color={C.purpleGlow} style={{ top: 300, right: -100 }} />
@@ -229,26 +231,26 @@ const HomeScreen = () => {
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* ── NAVBAR ── */}
-        <Animated.View style={[styles.navbar, { opacity: fadeIn }]}>
+        <Animated.View style={[styles.navbar, isCompact && styles.navbarCompact, { opacity: fadeIn }]}>
           {/* Logo */}
-          <View style={styles.navLogo}>
-            <View style={styles.navLogoIcon}>
+          <View style={[styles.navLogo, isCompact && styles.navLogoCompact]}>
+            <View style={[styles.navLogoIcon, isCompact && styles.navLogoIconCompact]}>
               <Ionicons name="wallet" size={20} color={C.accent} />
             </View>
-            <View>
-              <Text style={styles.navAppName}>{APP_NAME}</Text>
-              <Text style={styles.navTagline}>room expense tracker</Text>
+            <View style={styles.navLogoCopy}>
+              <Text numberOfLines={1} style={[styles.navAppName, isCompact && styles.navAppNameCompact]}>{APP_NAME}</Text>
+              {!isCompact && <Text style={styles.navTagline}>room expense tracker</Text>}
             </View>
           </View>
 
           {/* Nav buttons */}
-          <View style={styles.navActions}>
+          <View style={[styles.navActions, isCompact && styles.navActionsCompact]}>
             <NavBtn label="Login" onPress={() => navigation.navigate("Login")} variant="ghost" />
             <NavBtn label="Register" onPress={() => navigation.navigate("Register")} variant="accent" />
           </View>
         </Animated.View>
 
-        <View style={[styles.body, isDesktop && styles.bodyDesktop]}>
+        <View style={[styles.body, isCompact && styles.bodyCompact, isDesktop && styles.bodyDesktop]}>
 
           {/* ── HERO SECTION ── */}
           <Animated.View
@@ -265,7 +267,7 @@ const HomeScreen = () => {
                 <Text style={styles.eyebrowText}>Now available on web & mobile</Text>
               </View>
 
-              <Text style={[styles.heroHeading, isDesktop && styles.heroHeadingDesktop]}>
+              <Text style={[styles.heroHeading, isCompact && styles.heroHeadingCompact, isDesktop && styles.heroHeadingDesktop]}>
                 Split bills.{"\n"}
                 <Text style={{ color: C.accent }}>No drama.</Text>
               </Text>
@@ -290,7 +292,7 @@ const HomeScreen = () => {
               </View>
 
               {/* Stats */}
-              <View style={styles.statsRow}>
+              <View style={[styles.statsRow, isCompact && styles.statsRowCompact]}>
                 <Stat num="10k+" label="Users" />
                 <View style={styles.statDivider} />
                 <Stat num="₹2M+" label="Settled" />
@@ -338,7 +340,7 @@ const HomeScreen = () => {
               </View>
             ) : (
               // Mobile tiles
-              <View style={styles.mobileTiles}>
+              <View style={[styles.mobileTiles, isCompact && styles.mobileTilesCompact]}>
                 <Tile icon="flash-outline" label="Instant" sub="Signup in 30s" />
                 <Tile icon="bar-chart-outline" label="Clear" sub="Live balances" />
                 <Tile icon="shield-checkmark-outline" label="Secure" sub="Admin controls" />
@@ -403,14 +405,15 @@ const HomeScreen = () => {
 
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 // ─── Styles ────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: C.bg },
+  screen: { flex: 1, width: "100%", minWidth: 0, backgroundColor: C.bg, overflow: "hidden" },
   body: { paddingHorizontal: 20, paddingBottom: 60 },
+  bodyCompact: { paddingHorizontal: 14 },
   bodyDesktop: { paddingHorizontal: 60, maxWidth: 1200, alignSelf: "center", width: "100%" },
 
   // Navbar
@@ -425,7 +428,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "rgba(255,255,255,0.06)",
   },
+  navbarCompact: { paddingHorizontal: 12, paddingVertical: 12 },
   navLogo: { flexDirection: "row", alignItems: "center", gap: 12 },
+  navLogoCompact: { flex: 1, minWidth: 0, gap: 8 },
+  navLogoCopy: { minWidth: 0 },
   navLogoIcon: {
     width: 42,
     height: 42,
@@ -436,9 +442,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  navLogoIconCompact: { width: 36, height: 36, borderRadius: 11 },
   navAppName: { fontSize: 16, fontWeight: "900", color: C.white, letterSpacing: -0.3 },
+  navAppNameCompact: { fontSize: 13 },
   navTagline: { fontSize: 10, color: C.slate400, textTransform: "uppercase", letterSpacing: 1.2, marginTop: 1 },
   navActions: { flexDirection: "row", gap: 8 },
+  navActionsCompact: { gap: 4, flexShrink: 0 },
   navBtn: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -473,6 +482,7 @@ const styles = StyleSheet.create({
     lineHeight: 48,
     letterSpacing: -1.2,
   },
+  heroHeadingCompact: { fontSize: 36, lineHeight: 43 },
   heroHeadingDesktop: { fontSize: 58, lineHeight: 66 },
   heroBody: {
     fontSize: 15,
@@ -509,6 +519,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: "hidden",
   },
+  statsRowCompact: { alignSelf: "stretch" },
   stat: { paddingHorizontal: 20, paddingVertical: 14, alignItems: "center" },
   statNum: { fontSize: 18, fontWeight: "900", color: C.accent },
   statLabel: { fontSize: 10, color: C.slate400, marginTop: 2, textTransform: "uppercase", letterSpacing: 0.8 },
@@ -580,6 +591,7 @@ const styles = StyleSheet.create({
 
   // Mobile tiles
   mobileTiles: { flexDirection: "row", gap: 10, marginTop: 4 },
+  mobileTilesCompact: { gap: 6 },
   tile: {
     flex: 1,
     backgroundColor: "rgba(255,255,255,0.04)",

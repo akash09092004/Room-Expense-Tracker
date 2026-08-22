@@ -41,9 +41,11 @@
   },
   "scripts": {
     "start": "expo start",
+    "start:clear": "expo start --clear",
     "postinstall": "node ./scripts/fix-reanimated-private-fields.js",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
+    "android:clear": "expo start --android --clear",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint"
